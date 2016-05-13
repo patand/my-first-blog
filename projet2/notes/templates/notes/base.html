@@ -1,0 +1,1445 @@
+
+{% load static from staticfiles %}
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">-->
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel='stylesheet' type='text/css' href='{% static 'fullcalendar/fullcalendar.css' %}' />
+
+
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.1.min.js"></script> 
+<script type="text/javascript" src="{{ STATIC_URL }}fullcalendar/fullcalendar.min.js"></script>
+<!--<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.17.custom.min.js"></script> -->
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.custom.min.js"></script>
+
+
+<!--<link href='D:/kerviel/PYTHON_DJANGO/projet2/notes/templates/notes/fullcalendar/fullcalendar.css' rel='stylesheet' />
+<link href='D:/kerviel/PYTHON_DJANGO/projet2/notes/templates/notes/fullcalendar/fullcalendar.print.css' rel='stylesheet' media='print' />
+<script src='D:/kerviel/PYTHON_DJANGO/projet2/notes/templates/notes/lib/jquery-1.7.1.min.js'></script>
+<script src='D:/kerviel/PYTHON_DJANGO/projet2/notes/templates/notes/lib/jquery-ui.custom.min.js'></script>
+<script src='D:/kerviel/PYTHON_DJANGO/projet2/notes/templates/notes/fullcalendar/fullcalendar.min.js'></script> --> 
+
+
+<script type='text/javascript'>
+
+function getWeekNumber(d) { d = new Date(d); d.setHours(0,0,0);
+
+d.setDate(d.getDate() + 4 - (d.getDay()||7));
+
+var yearStart = new Date(d.getFullYear(),0,1);
+
+var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+
+return weekNo; }
+
+function saveMyData(event, dayDelta, minuteDelta) {
+
+montitre = event.title;
+mondepart = event.start;
+mafin = event.end;
+macategorie = event.categorie.name;
+description = event.description;
+
+
+lundi=event.lundi;
+mardi=event.mardi;
+mercredi=event.mercredi;
+jeudi=event.jeudi;
+vendredi=event.vendredi;
+samedi=event.samedi;
+dimanche=event.dimanche;
+fin=event.fin;
+frequence=event.frequency;
+couleur=event.couleur;
+numero=event.numero;
+
+var datim = new Date(mondepart);
+mondepart = datim.getTime()/1000; 
+
+var datum = new Date(mafin);
+mafin = datum.getTime()/1000; 
+
+
+
+//mafin = 1451257200.0;
+
+ma=event.mavar;
+
+
+
+
+     $.getJSON("{% url events_drag %}", {'title': montitre, 'start': mondepart,
+                                     'end': mafin, 'categorie': macategorie, 'description': description, 'lefin': fin, 'lefrequence':frequence, 'lundi': lundi, 'mardi': mardi, 'mercredi': mercredi, 'jeudi': jeudi,
+
+                                         'vendredi': vendredi, 'samedi': samedi, 'dimanche': dimanche, 'couleur': couleur, 'numero':numero, 'weekend': ma},  function(data) {
+
+                                         });   
+
+                                      }
+
+
+function printGraph(){
+     
+     window.print('placeholder');
+
+     }
+
+
+
+
+</script>
+
+
+<script type='text/javascript'>
+
+
+
+
+
+var curSource = new Array();
+
+curSource[0] ='/events_json/cal?e1=' + $('#e1').is(':checked') + '&e2='+ $('#e2').is(':checked') + '&e3='+ $('#e3').is(':checked') + '&e4='+ $('#e4').is(':checked') + '&e5='+ $('#e5').is(':checked') +
+'&e6='+ $('#e6').is(':checked') + '&e7='+ $('#e7').is(':checked');
+var newSource = new Array();
+
+
+
+
+$(document).ready(function() {
+  
+
+
+
+$('#workweek').click(function(){
+var weekend = $('#calendar').fullCalendar('option', 'weekends');
+    if (weekend){
+        $('#values').text('Show weekend');
+        $('.fc-header').remove();
+        $('.fc-content').remove();
+          $('#calendar').fullCalendar({
+
+              
+           eventSources: [curSource[0],curSource[1]],
+
+              viewDisplay: function(view) {
+                         if (view.name == 'agendaWeek') {
+                            
+                              $("table.fc-header span.fc-header-title h2").append(" - " + "Semaine : " + getWeekNumber(view.start));
+                            }
+                         
+                          if (view.name == 'year') {
+      $(menu).css('margin-top', '75px');
+
+      }
+  else {
+  
+   if ((view.name == 'month') || (view.name == 'week') || (view.name == 'day')) { 
+      $(menu).css('margin-top', '50px');
+
+      }
+   }
+                         
+                         },
+                        
+                        weekNumbers: true,
+                        height:400,
+                        editable: true,
+                        selectable: true,
+                        weekMode:'liquid',
+                        weekNumbers: true,
+                      
+                        weekends: false,
+			header: {
+				left: 'prev,next today, save',
+				center: 'title',
+				right: 'year,month,agendaWeek,agendaDay,agendaFourDay'
+			},
+
+              eventMouseover: function(event, jsEvent, view) {
+            if (view.name !== 'agendaDay') {
+                //alert(event.categorie);
+                $(jsEvent.target).attr('title', event.description);
+                 element.draggable = false;
+
+               
+            }
+       },
+
+           monthNames: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet',
+						 'Août','Septembre','Octobre','Novembre','Décembre'],
+			monthNamesShort:
+			['Janv.','Févr.','Mars','Avr.','Mai','Juin','Juil.','Août','Sept.','Oct.','Nov.','Déc.'],
+			dayNames: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
+			dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+			titleFormat: {
+ 				month: 'MMMM yyyy', // ex : Janvier 2010
+ 				week: "d[ MMMM][ yyyy]{ - d MMMM yyyy}", // ex : 10 — 16 Janvier 2010, semaine à cheval : 28 Décembre 2009 - 3 Janvier 2010
+				// todo : ajouter le numéro de la semaine
+ 				day: 'dddd d MMMM yyyy' // ex : Jeudi 14 Janvier 2010
+			},
+			columnFormat: {
+ 				month: 'ddd', // Ven.
+ 				week: 'ddd d', // Ven. 15
+				day: '' // affichage déja complet au niveau du 'titleFormat'
+			},
+			axisFormat: 'H:mm', // la demande de ferdinand.amoi : 15:00 (pour 15, simplement supprimer le ':mm'
+			timeFormat: {
+				'': 'H:mm', // événements vue mensuelle.
+				agenda: 'H:mm{ - H:mm}' // événements vue agenda
+			},
+			firstDay:1, // Lundi premier jour de la semaine 
+			buttonText: {
+				prev:     '&nbsp;&#9668;&nbsp;',  // left triangle
+				next:     '&nbsp;&#9658;&nbsp;',  // right triangle
+				prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
+				nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
+				today:    'Aujourd\'hui',
+                                save:     'Sauvegarde',
+                                year:     'Année',
+				month:    'Mois',
+				week:     'Semaine',
+				day:      'Jour'
+			},
+
+
+
+
+           eventRender: function(event, element, view) {
+    
+    var lundi=event.lundi;
+    var mardi=event.mardi;
+    var mercredi=event.mercredi;
+    var jeudi=event.jeudi;
+    var vendredi=event.vendredi;
+    var samedi=event.samedi;
+    var dimanche=event.dimanche;
+    var couleur=event.couleur;
+    var inc=event.mavar;
+
+   
+ 
+if(inc== 'EXCLUDE') {
+    
+    
+    if((couleur=='ROUGE')&&(event.title))  {
+          
+            element.children('.fc-event-inner').css({'background-color':'#FA5882'});  // red
+            element.children('.fc-event-inner').css({'color':'white'});
+            var lacategorie= event.categorie.name
+            //document.getElementById('textDiv').value = lacategorie;
+            document.getElementById('textDiv').innerHTML  = lacategorie;
+
+     if ($('input[id=e1]').is(':checked')) {
+       
+        element.show();
+        
+        
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+            
+             }
+            
+          }
+
+
+
+    if((couleur=='BLEU')&&(event.title)) {
+        
+          
+          element.children('.fc-event-inner').css({'background-color':'#A9F5F2'});   // blue
+          element.children('.fc-event-inner').css({'color':'black'});
+          var lacategorie= event.categorie.name
+          //document.getElementById('textDiv2').value = lacategorie;
+          document.getElementById('textDiv2').innerHTML  = lacategorie;
+
+    if ($('input[id=e2]').is(':checked')) {
+
+       
+        
+         element.show();
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+          
+          }
+
+    if((couleur=='VERT')&&(event.title)) {
+          
+        
+          element.children('.fc-event-inner').css({'background-color':'#A9F5D0'});  // vert
+          element.children('.fc-event-inner').css({'color':'black'});
+          var lacategorie= event.categorie.name
+          //document.getElementById('textDiv3').value = lacategorie;
+          document.getElementById('textDiv3').innerHTML  = lacategorie;
+
+          if ($('input[id=e3]').is(':checked')) {
+
+       
+         element.show();
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+
+        
+             }
+          
+                                                  
+
+     if((couleur=='JAUNE')&&(event.title)) {  // si la couleur est jaune
+          
+          
+         
+           element.children('.fc-event-inner').css({'background-color':'#F4FA58'});  // jaune
+           element.children('.fc-event-inner').css({'color':'black'});
+           var lacategorie= event.categorie.name
+           //document.getElementById('textDiv4').value = lacategorie;
+           document.getElementById('textDiv4').innerHTML  = lacategorie;
+
+            if ($('input[id=e4]').is(':checked')) {
+
+       
+         element.show();
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+                                                   }
+
+     if((couleur=='ORANGE')&&(event.title)) {
+          
+          
+         
+           element.children('.fc-event-inner').css({'background-color':'#FAAC58'});   //  orange
+           element.children('.fc-event-inner').css({'color':'black'});
+           var lacategorie= event.categorie.name
+           //document.getElementById('textDiv5').value = lacategorie;
+           document.getElementById('textDiv5').innerHTML  = lacategorie;
+
+           if ($('input[id=e5]').is(':checked')) {
+
+       
+         element.show();
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+                                                   }
+
+     if((couleur=='MAGENTA')&&(event.title)) {
+          
+          
+           weekends:false
+           element.children('.fc-event-inner').css({'background-color':'#F6CEF5'});   //  magenta
+           element.children('.fc-event-inner').css({'color':'black'});
+           var lacategorie= event.categorie.name
+           //document.getElementById('textDiv6').value = lacategorie;
+           document.getElementById('textDiv6').innerHTML  = lacategorie;
+
+            if ($('input[id=e6]').is(':checked')) {
+
+       
+         element.show();
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+                                                   }
+
+    if((couleur=='CYAN')&&(event.title)) {
+          
+          
+           
+           element.children('.fc-event-inner').css({'background-color':'cyan'});    // cyan
+           element.children('.fc-event-inner').css({'color':'black'});
+           var lacategorie= event.categorie.name
+           //document.getElementById('textDiv7').value = lacategorie;
+           document.getElementById('textDiv7').innerHTML  = lacategorie;
+            if ($('input[id=e7]').is(':checked')) {
+
+        
+         element.show();
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+       }
+
+    }
+    else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+
+  
+   
+   
+   },
+eventDrop: function (event, dayDelta, minuteDelta) {
+    
+               saveMyData(event);
+           },
+
+eventResize: function (event, dayDelta, minuteDelta) {
+                 saveMyData(event);
+             },		
+
+ eventClick: function(calEvent, jsEvent, view) {
+				document.location.href = '/admin/notes/event/'+ calEvent.id + '/';
+			},
+		    dayClick: function(date, allDay, jsEvent, view) {
+				document.location.href = '/admin/notes/event/add/';
+			}
+
+
+
+              });
+
+
+
+
+$("#e1, #e2, #e3, #e4, #e5, #e6, #e7").change(function() {
+        //get current status of our filters into newSource
+        newSource[0] = '/events_json/cal?e1=' +  $('#e1').is(':checked') + '&e2='+ $('#e2').is(':checked') + '&e3='+ $('#e3').is(':checked') + '&e4='+ $('#e4').is(':checked') + '&e5='+ $('#e5').is(':checked') + '&e6='+ $('#e6').is(':checked');
+       
+
+        //remove the old eventSources
+        //$('#eventFilterCalendar').fullCalendar('removeEventSource', curSource[0]);
+         $('#calendar').fullCalendar('removeEventSource', curSource[0]);
+      
+        //$('#eventFilterCalendar').fullCalendar('refetchEvents');
+         $('#calendar').fullCalendar('refetchEvents');
+
+        //attach the new eventSources
+        //$('#eventFilterCalendar').fullCalendar('addEventSource', newSource[0]);
+         $('#calendar').fullCalendar('addEventSource', newSource[0]);
+       
+        //$('#eventFilterCalendar').fullCalendar('refetchEvents');
+         $('#calendar').fullCalendar('refetchEvents');
+
+        curSource[0] = newSource[0];
+       
+    });
+
+
+        }
+
+    });
+
+$('#weekends').click(function(){
+    $('.fc-header').remove();
+    $('.fc-content').remove();
+       $('#calendar').fullCalendar({
+           eventSources: [curSource[0],curSource[1]],
+
+              viewDisplay: function(view) {
+                         if (view.name == 'agendaWeek') {
+                            
+                              $("table.fc-header span.fc-header-title h2").append(" - " + "Semaine : " + getWeekNumber(view.start));
+                            }
+                          if (view.name == 'year') {
+      $(menu).css('margin-top', '75px');
+
+      }
+  else {
+  
+   if ((view.name == 'month') || (view.name == 'week') || (view.name == 'day')) { 
+      $(menu).css('margin-top', '50px');
+
+      }
+   }
+                         },
+                        
+                        weekNumbers: true,
+                        height:400,
+                        editable: true,
+                        selectable: true,
+                        weekMode:'liquid',
+                        weekNumbers: true,
+                        //theme: true,
+                      
+                        weekends: true,
+			header: {
+				left: 'prev,next today, save',
+				center: 'title',
+				right: 'year,month,agendaWeek,agendaDay,agendaFourDay'
+			},
+
+              eventMouseover: function(event, jsEvent, view) {
+            if (view.name !== 'agendaDay') {
+                //alert(event.categorie);
+                $(jsEvent.target).attr('title', event.description);
+                 element.draggable = false;
+
+               
+            }
+       },
+
+           monthNames: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet',
+						 'Août','Septembre','Octobre','Novembre','Décembre'],
+			monthNamesShort:
+			['Janv.','Févr.','Mars','Avr.','Mai','Juin','Juil.','Août','Sept.','Oct.','Nov.','Déc.'],
+			dayNames: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
+			dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+			titleFormat: {
+ 				month: 'MMMM yyyy', // ex : Janvier 2010
+ 				week: "d[ MMMM][ yyyy]{ - d MMMM yyyy}", // ex : 10 — 16 Janvier 2010, semaine à cheval : 28 Décembre 2009 - 3 Janvier 2010
+				// todo : ajouter le numéro de la semaine
+ 				day: 'dddd d MMMM yyyy' // ex : Jeudi 14 Janvier 2010
+			},
+			columnFormat: {
+ 				month: 'ddd', // Ven.
+ 				week: 'ddd d', // Ven. 15
+				day: '' // affichage déja complet au niveau du 'titleFormat'
+			},
+			axisFormat: 'H:mm', // la demande de ferdinand.amoi : 15:00 (pour 15, simplement supprimer le ':mm'
+			timeFormat: {
+				'': 'H:mm', // événements vue mensuelle.
+				agenda: 'H:mm{ - H:mm}' // événements vue agenda
+			},
+			firstDay:1, // Lundi premier jour de la semaine 
+			buttonText: {
+				prev:     '&nbsp;&#9668;&nbsp;',  // left triangle
+				next:     '&nbsp;&#9658;&nbsp;',  // right triangle
+				prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
+				nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
+				today:    'Aujourd\'hui',
+                                save:     'Sauvegarde',
+                                year:     'Année',
+				month:    'Mois',
+				week:     'Semaine',
+				day:      'Jour'
+			},
+
+
+
+
+           eventRender: function(event, element, view) {
+    
+    var lundi=event.lundi;
+    var mardi=event.mardi;
+    var mercredi=event.mercredi;
+    var jeudi=event.jeudi;
+    var vendredi=event.vendredi;
+    var samedi=event.samedi;
+    var dimanche=event.dimanche;
+    var couleur=event.couleur;
+    var inc=event.mavar;
+  
+ 
+if(inc=='INCLUDE')  {
+    
+    if((couleur=='ROUGE')&&(event.title))  {
+          
+            element.children('.fc-event-inner').css({'background-color':'#FA5882'});  // red
+            element.children('.fc-event-inner').css({'color':'white'});
+            var lacategorie= event.categorie.name
+            //document.getElementById('textDiv').value = lacategorie;
+            document.getElementById('textDiv').innerHTML  = lacategorie;
+
+     if ($('input[id=e1]').is(':checked')) {
+       
+        element.show();
+        
+        
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+            
+             }
+            
+          }
+
+
+
+    if((couleur=='BLEU')&&(event.title)) {
+        
+          
+          element.children('.fc-event-inner').css({'background-color':'#A9F5F2'});   // blue
+          element.children('.fc-event-inner').css({'color':'black'});
+          var lacategorie= event.categorie.name
+          //document.getElementById('textDiv2').value = lacategorie;
+          document.getElementById('textDiv2').innerHTML  = lacategorie;
+
+    if ($('input[id=e2]').is(':checked')) {
+
+       
+        
+         element.show();
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+          
+          }
+
+    if((couleur=='VERT')&&(event.title)) {
+          
+        
+          element.children('.fc-event-inner').css({'background-color':'#A9F5D0'});  // vert
+          element.children('.fc-event-inner').css({'color':'black'});
+          var lacategorie= event.categorie.name
+          //document.getElementById('textDiv3').value = lacategorie;
+          document.getElementById('textDiv3').innerHTML  = lacategorie;
+
+          if ($('input[id=e3]').is(':checked')) {
+
+       
+         element.show();
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+
+        
+             }
+          
+                                                  
+
+     if((couleur=='JAUNE')&&(event.title)) {  // si la couleur est jaune
+          
+          
+         
+           element.children('.fc-event-inner').css({'background-color':'#F4FA58'});  // jaune
+           element.children('.fc-event-inner').css({'color':'black'});
+           var lacategorie= event.categorie.name
+           //document.getElementById('textDiv4').value = lacategorie;
+           document.getElementById('textDiv4').innerHTML  = lacategorie;
+
+            if ($('input[id=e4]').is(':checked')) {
+
+       
+         element.show();
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+                                                   }
+
+     if((couleur=='ORANGE')&&(event.title)) {
+          
+          
+         
+           element.children('.fc-event-inner').css({'background-color':'#FAAC58'});   //  orange
+           element.children('.fc-event-inner').css({'color':'black'});
+           var lacategorie= event.categorie.name
+           //document.getElementById('textDiv5').value = lacategorie;
+           document.getElementById('textDiv5').innerHTML  = lacategorie;
+
+           if ($('input[id=e5]').is(':checked')) {
+
+       
+         element.show();
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+                                                   }
+
+     if((couleur=='MAGENTA')&&(event.title)) {
+          
+          
+           weekends:false
+           element.children('.fc-event-inner').css({'background-color':'#F6CEF5'});   //  magenta
+           element.children('.fc-event-inner').css({'color':'black'});
+           var lacategorie= event.categorie.name
+           //document.getElementById('textDiv6').value = lacategorie;
+           document.getElementById('textDiv6').innerHTML  = lacategorie;
+
+            if ($('input[id=e6]').is(':checked')) {
+
+       
+         element.show();
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+                                                   }
+
+    if((couleur=='CYAN')&&(event.title)) {
+          
+          
+           
+           element.children('.fc-event-inner').css({'background-color':'cyan'});    // cyan
+           element.children('.fc-event-inner').css({'color':'black'});
+           var lacategorie= event.categorie.name
+           //document.getElementById('textDiv7').value = lacategorie;
+           document.getElementById('textDiv7').innerHTML  = lacategorie;
+            if ($('input[id=e7]').is(':checked')) {
+
+        
+         element.show();
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+           
+            }
+
+  }
+     else {
+             element.offsetWidth;
+             element.hide();
+             }
+    
+   
+   
+   },
+eventDrop: function (event, dayDelta, minuteDelta) {
+    
+               saveMyData(event);
+           },
+
+eventResize: function (event, dayDelta, minuteDelta) {
+                 saveMyData(event);
+             },		
+
+ eventClick: function(calEvent, jsEvent, view) {
+				document.location.href = '/admin/notes/event/'+ calEvent.id + '/';
+			},
+		    dayClick: function(date, allDay, jsEvent, view) {
+				document.location.href = '/admin/notes/event/add/';
+			}
+
+
+
+              });
+
+
+
+
+$("#e1, #e2, #e3, #e4, #e5, #e6, #e7").change(function() {
+        //get current status of our filters into newSource
+        newSource[0] = '/events_json/cal?e1=' +  $('#e1').is(':checked') + '&e2='+ $('#e2').is(':checked') + '&e3='+ $('#e3').is(':checked') + '&e4='+ $('#e4').is(':checked') + '&e5='+ $('#e5').is(':checked') + '&e6='+ $('#e6').is(':checked');
+       
+
+        //remove the old eventSources
+        //$('#eventFilterCalendar').fullCalendar('removeEventSource', curSource[0]);
+         $('#calendar').fullCalendar('removeEventSource', curSource[0]);
+      
+        //$('#eventFilterCalendar').fullCalendar('refetchEvents');
+         $('#calendar').fullCalendar('refetchEvents');
+
+        //attach the new eventSources
+        //$('#eventFilterCalendar').fullCalendar('addEventSource', newSource[0]);
+         $('#calendar').fullCalendar('addEventSource', newSource[0]);
+       
+        //$('#eventFilterCalendar').fullCalendar('refetchEvents');
+         $('#calendar').fullCalendar('refetchEvents');
+
+        curSource[0] = newSource[0];
+       
+    });
+
+    });
+  
+		$('#calendar').fullCalendar({
+                   // $('#eventFilterCalendar').fullCalendar({
+                     
+                     eventSources: [curSource[0],curSource[1]],
+                    viewDisplay: function(view) {
+                         if (view.name == 'agendaWeek') {
+                            
+                              $("table.fc-header span.fc-header-title h2").append(" - " + "Semaine : " + getWeekNumber(view.start));
+                            }
+                          if (view.name == 'year') {
+      $(menu).css('margin-top', '75px');
+
+      }
+  else {
+  
+   if ((view.name == 'month') || (view.name == 'week') || (view.name == 'day')) { 
+      $(menu).css('margin-top', '50px');
+
+      }
+   }
+                         },
+                        
+                        weekNumbers: true,
+                        height:400,
+                        editable: true,
+                        selectable: true,
+                        //weekends: false,
+                        defaultView: 'year',
+                        //theme: true,
+			header: {
+				left: 'prev,next today, save',
+				center: 'title',
+				right: 'year,month,agendaWeek,agendaDay,agendaFourDay'
+			},
+                        
+                       'defaultView': 'month',
+                     eventRender: function (event, element) {
+                           element.attr('href', 'javascript:void(0);');
+                     },
+			
+
+
+                   views: {
+        agendaFourDay: {
+            type: 'agenda',
+            duration: { days: 4 },
+            buttonText: '4 day'
+        }
+    },
+
+                       
+
+
+			monthNames: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet',
+						 'Août','Septembre','Octobre','Novembre','Décembre'],
+			monthNamesShort:
+			['Janv.','Févr.','Mars','Avr.','Mai','Juin','Juil.','Août','Sept.','Oct.','Nov.','Déc.'],
+			dayNames: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
+			dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+			titleFormat: {
+ 				month: 'MMMM yyyy', // ex : Janvier 2010
+ 				week: "d[ MMMM][ yyyy]{ - d MMMM yyyy}", // ex : 10 — 16 Janvier 2010, semaine à cheval : 28 Décembre 2009 - 3 Janvier 2010
+				// todo : ajouter le numéro de la semaine
+ 				day: 'dddd d MMMM yyyy' // ex : Jeudi 14 Janvier 2010
+			},
+			columnFormat: {
+ 				month: 'ddd', // Ven.
+ 				week: 'ddd d', // Ven. 15
+				day: '' // affichage déja complet au niveau du 'titleFormat'
+			},
+			axisFormat: 'H:mm', // la demande de ferdinand.amoi : 15:00 (pour 15, simplement supprimer le ':mm'
+			timeFormat: {
+				'': 'H:mm', // événements vue mensuelle.
+				agenda: 'H:mm{ - H:mm}' // événements vue agenda
+			},
+			firstDay:1, // Lundi premier jour de la semaine 
+			buttonText: {
+				prev:     '&nbsp;&#9668;&nbsp;',  // left triangle
+				next:     '&nbsp;&#9658;&nbsp;',  // right triangle
+				prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
+				nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
+				today:    'Aujourd\'hui',
+                                save:     'Sauvegarde',
+                                year:     'Année',
+				month:    'Mois',
+				week:     'Semaine',
+				day:      'Jour'
+			},
+
+
+                                                                                     
+			                                                         
+eventDrop: function (event, dayDelta, minuteDelta) {
+    
+               saveMyData(event);
+           },
+
+eventResize: function (event, dayDelta, minuteDelta) {
+                 saveMyData(event);
+             },			                                                        
+                     	                       
+                       
+                                                                                     
+                          
+
+                                                                                     
+                                                                            
+		    eventClick: function(calEvent, jsEvent, view) {
+				document.location.href = '/admin/notes/event/'+ calEvent.id + '/';
+			},
+		    dayClick: function(date, allDay, jsEvent, view) {
+				document.location.href = '/admin/notes/event/add/';
+			},
+
+eventMouseover: function(event, jsEvent, view) {
+            if (view.name !== 'agendaDay') {
+                //alert(event.categorie);
+                $(jsEvent.target).attr('title', event.description);
+                 element.draggable = false;
+
+               
+            }
+       },
+                                                                                     
+ eventDragStart: function(event, jsEvent, ui, view) {
+        draggedEventAllDay = event.allDay;
+    },
+
+ eventDrop: function (event, delta, revertFunc) {
+                event.isChanged = true;
+            },
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                                                                     
+  eventRender: function(event, element, view) {
+    
+    var lundi=event.lundi;
+    var mardi=event.mardi;
+    var mercredi=event.mercredi;
+    var jeudi=event.jeudi;
+    var vendredi=event.vendredi;
+    var samedi=event.samedi;
+    var dimanche=event.dimanche;
+    var couleur=event.couleur
+    var ma=event.mavar;
+  
+if(ma=='INCLUDE') { 
+    
+    
+    if((couleur=='ROUGE')&&(event.title))  {
+          
+            element.children('.fc-event-inner').css({'background-color':'#FA5882'});  // red
+            element.children('.fc-event-inner').css({'color':'white'});
+            var lacategorie= event.categorie.name
+            //document.getElementById('textDiv').value = lacategorie;
+            document.getElementById('textDiv').innerHTML  = lacategorie;
+
+     if ($('input[id=e1]').is(':checked')) {
+       
+        element.show();
+        
+        
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+            
+             }
+            
+          }
+
+
+
+    if((couleur=='BLEU')&&(event.title)) {
+        
+          
+          element.children('.fc-event-inner').css({'background-color':'#A9F5F2'});   // blue
+          element.children('.fc-event-inner').css({'color':'black'});
+          var lacategorie= event.categorie.name
+          //document.getElementById('textDiv2').value = lacategorie;
+          document.getElementById('textDiv2').innerHTML  = lacategorie;
+
+    if ($('input[id=e2]').is(':checked')) {
+
+       
+        
+         element.show();
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+          
+          }
+
+    if((couleur=='VERT')&&(event.title)) {
+          
+        
+          element.children('.fc-event-inner').css({'background-color':'#A9F5D0'});  // vert
+          element.children('.fc-event-inner').css({'color':'black'});
+          var lacategorie= event.categorie.name
+          //document.getElementById('textDiv3').value = lacategorie;
+          document.getElementById('textDiv3').innerHTML  = lacategorie;
+
+          if ($('input[id=e3]').is(':checked')) {
+
+       
+         element.show();
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+
+        
+             }
+          
+                                                  
+
+     if((couleur=='JAUNE')&&(event.title)) {  // si la couleur est jaune
+          
+          
+         
+           element.children('.fc-event-inner').css({'background-color':'#F4FA58'});  // jaune
+           element.children('.fc-event-inner').css({'color':'black'});
+           var lacategorie= event.categorie.name
+           //document.getElementById('textDiv4').value = lacategorie;
+           document.getElementById('textDiv4').innerHTML  = lacategorie;
+
+            if ($('input[id=e4]').is(':checked')) {
+
+       
+         element.show();
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+                                                   }
+
+     if((couleur=='ORANGE')&&(event.title)) {
+          
+          
+         
+           element.children('.fc-event-inner').css({'background-color':'#FAAC58'});   //  orange
+           element.children('.fc-event-inner').css({'color':'black'});
+           var lacategorie= event.categorie.name
+           //document.getElementById('textDiv5').value = lacategorie;
+           document.getElementById('textDiv5').innerHTML  = lacategorie;
+
+           if ($('input[id=e5]').is(':checked')) {
+
+       
+         element.show();
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+                                                   }
+
+     if((couleur=='MAGENTA')&&(event.title)) {
+          
+          
+           weekends:false
+           element.children('.fc-event-inner').css({'background-color':'#F6CEF5'});   //  magenta
+           element.children('.fc-event-inner').css({'color':'black'});
+           var lacategorie= event.categorie.name
+           //document.getElementById('textDiv6').value = lacategorie;
+           document.getElementById('textDiv6').innerHTML  = lacategorie;
+
+            if ($('input[id=e6]').is(':checked')) {
+
+       
+         element.show();
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+                                                   }
+
+    if((couleur=='CYAN')&&(event.title)) {
+          
+          
+           
+           element.children('.fc-event-inner').css({'background-color':'cyan'});    // cyan
+           element.children('.fc-event-inner').css({'color':'black'});
+           var lacategorie= event.categorie.name
+           //document.getElementById('textDiv7').value = lacategorie;
+           document.getElementById('textDiv7').innerHTML  = lacategorie;
+            if ($('input[id=e7]').is(':checked')) {
+
+        
+         element.show();
+       
+         }
+         else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+          }
+
+    }
+
+    else {
+             element.offsetWidth;
+             element.hide();
+             //return false;
+             }
+
+  
+   
+   
+   }                                                                                   
+                                                                                
+
+
+
+                                                                                     
+
+
+                                                                                     
+		});
+                                            
+
+$("#e1, #e2, #e3, #e4, #e5, #e6, #e7").change(function() {
+        //get current status of our filters into newSource
+        newSource[0] = '/events_json/cal?e1=' +  $('#e1').is(':checked') + '&e2='+ $('#e2').is(':checked') + '&e3='+ $('#e3').is(':checked') + '&e4='+ $('#e4').is(':checked') + '&e5='+ $('#e5').is(':checked') + '&e6='+ $('#e6').is(':checked');
+       
+
+        //remove the old eventSources
+        //$('#eventFilterCalendar').fullCalendar('removeEventSource', curSource[0]);
+         $('#calendar').fullCalendar('removeEventSource', curSource[0]);
+      
+        //$('#eventFilterCalendar').fullCalendar('refetchEvents');
+         $('#calendar').fullCalendar('refetchEvents');
+
+        //attach the new eventSources
+        //$('#eventFilterCalendar').fullCalendar('addEventSource', newSource[0]);
+         $('#calendar').fullCalendar('addEventSource', newSource[0]);
+       
+        //$('#eventFilterCalendar').fullCalendar('refetchEvents');
+         $('#calendar').fullCalendar('refetchEvents');
+
+        curSource[0] = newSource[0];
+       
+    });
+
+
+                                            
+	});
+</script>
+<style type='text/css'>
+
+div#menu {
+	float:left;
+	width:150px;
+	height:400px;
+	background-color:#FFFFFF;
+        margin-top:50px;
+	}
+div#contenu {
+	float:left;
+	width:800px;
+	height:400px;
+	background-color:#FFFFFF;
+	}
+#eventFilterCalendar .fc-sat
+#eventFilterCalendar .fc-sun  {
+  background-color:#F9F9F9;}              
+
+#calendar .fc-sat,
+#calendar .fc-sun {
+  background-color:#F9F9F9;}
+
+.fc-header-title h2 {
+    font-size: 18px;
+    white-space: normal !important;
+    font-weight: normal;
+}
+
+.fc-event {
+    font-size: 13px;
+    border: 2px solid black;
+    }                     
+#calendar .fc-sat,
+#calendar .fc-sun {
+  background-color:#F9F9F9;}
+
+ #calendar .fc-content{
+	background-color: #FFFFFF;
+	font-size: 100%;
+}
+#calendar .fc-event{
+	box-shadow: 2px 2px 2px #706868;
+}
+
+#calendar .fc-agenda-axis, #calendar .fc-widget-header{
+	background-color: #C2E6FF;
+	border-color: #AED0EA;
+	font-weight: normal;
+	font-size: 15px;
+	padding: 3px;
+	border-radius: 3px;
+}
+
+ .redGray
+{
+    border-color: DarkGray !important;
+    background-color: LightGray !important;
+    color: red !important;
+}
+
+	body {
+		//margin-top: 40px;
+		//text-align: center;
+		//font-size: 14px;
+		//font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+		}
+
+	#calendar {
+	        //float:left;
+		//width: 600px;
+		//height:500px;
+		margin: 0 auto;
+		}
+
+
+#main {
+width: 950px;
+//margin: 0 auto;
+margin-top:5px;
+    }
+
+.square {
+font-size: 15px;
+list-style-type:square;
+margin-top:-1px;
+margin-left:-15px;
+text-align: left;
+
+}
+
+a {
+font: 12px Verdana;
+//text-decoration: none;
+color: blue;
+}
+
+
+a:visited {color: #006600}
+a:hover {color: #ff0000; text-decoration: none; }              
+
+a.red:hover {color: #DC143C; background: none; font-style: normal;}
+
+input.button-add {
+    
+    background-image: url("/static/medias/pdf0.png"); /* 20px x 20px */
+    background-color: transparent; /* make the button transparent */
+    background-repeat: no-repeat;  /* make the background image appear only once */
+    //background-position: 0px 0px;  /* equivalent to 'top left' */
+    float:left;
+    border: 2px;           /* assuming we don't want any borders */
+    //color: green;
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+    height: 29px;           /* make this the size of your image */
+    //width : 46px;
+    //padding-right: 986px;     /* make text start to the right of the image */
+    //margin-right:865px;
+    margin-top:-5px;
+    margin: 0 auto;
+    vertical-align: middle; /* align the text vertically centered */
+}    
+
+.listContainer0 {
+            width:145px;
+            height: 20px;
+            background:#FA5882;
+            float: left;
+            border:1px solid #000000;
+            font-size: 13px;
+           
+        }
+
+.listContainer1 {
+            width:145px;
+            height: 20px;
+            background:#A9F5F2;
+            float: left;
+            border:1px solid #000000;
+            font-size: 13px;
+        }
+
+.listContainer2 {
+          
+            width:145px;
+            height: 20px;
+            background:#A9F5D0;
+            float: left;
+            border:1px solid #000000;
+            font-size: 13px;
+        }
+
+
+.listContainer3 {
+            
+            width:145px;
+            height: 25px;
+            background:#F4FA58;
+            float: left;
+            border:1px solid #000000;
+            font-size: 13px;
+        }
+
+.listContainer4 {
+            width:145px;
+            height: 25px;
+            background:#FAAC58;
+            float: left;
+            border:1px solid #000000;
+            font-size: 13px;
+        }
+
+
+
+             
+.listContainer5 {
+            width:145px;
+            height: 25px;
+            background:#F6CEF5;
+            float: left;
+            border:1px solid #000000;
+            font-size: 13px;
+        }
+
+.listContainer6 {
+           
+            width:145px;
+            height: 25px;
+            background:cyan;
+            float: left;
+            border:1px solid #000000;
+            font-size: 13px;
+        }
+</style>
+</head>
+<body>
+
+
+
+             
+<ul class="square">
+
+<ul>
+    {% if messages %}
+             
+    {% for message in messages %}
+    <li class="{{ message.tags }}">
+        {% if 'safe' in message.tags %}
+            {{ message|safe }}
+        {% else %}
+            <TT><font color="red" size="3">{{ message }}</font></TT>
+        {% endif %}
+    </li>
+    {% endfor %}
+
+     {% endif %}
+</ul>
+
+             
+{#{% if messages %} #}
+{#<ul class="messages">#}
+   {# {% for message in messages %} #}
+         {#    <TT><font color="red" size="3">{{ message }}</font></TT> #}
+   {# <p {% if message.tags %} class="{{ message.tags }}"{% endif %}><font color="red" size="3"> {{ message }}</font></p> #}
+  {#  {% endfor %} #}
+{#</ul>#}
+{# {% endif %} #}
+
+             
+{% if user.is_authenticated %}
+  <li><a id= "truc" href="">{{ user.username }}</a> | <a href="/admin/logout">[se deconnecter]</a></li>
+{% else  %}
+ <li><a id= "truc" href="/admin/logout">se connecter</a></li>
+{#<li><a href="/admin/logout">[se connecter]</a> </li>#}
+{% endif %}
+  {#<li>liste 2 avec disc</li>#}
+</br>
+<input type="button" value="Sauvegarde" onclick="printGraph();return false" title="sauvegarde du planning"/>
+<input type="button" id="weekends" value="week-ends inclus" />
+<input type="button" id="workweek" value="week-ends exclus" />
+
+
+</ul>
+
+<div id='main'>
+{#<input type="button" value="" onclick="printGraph();return false" title="sauvegarde du planning"  class="button-add"/>#}
+
+</br>
+
+<div id="menu">
+
+<div class="listContainer0">
+<input type="checkbox" checked="checked" name="e1" id="e1" style="float: left; margin-top: 5px;>">
+<div id="textDiv" style="margin-left: 25px;"></div> 
+</div> 
+            
+<div class="listContainer1">
+<input type="checkbox" checked="checked" name="e2" id="e2" style="float: left; margin-top: 5px;>">
+<div id="textDiv2" style="margin-left: 25px;"></div>          
+</div>
+
+<div class="listContainer2">
+<input type="checkbox" checked="checked" name="e3" id="e3" style="float: left; margin-top: 5px;>">
+<div id="textDiv3" style="margin-left: 25px;"></div>          
+</div>
+
+<div class="listContainer3">
+<input type="checkbox" checked="checked" name="e4" id="e4" style="float: left; margin-top: 5px;>">
+<div id="textDiv4" style="margin-left: 25px;"></div>          
+</div>
+
+<div class="listContainer4">
+<input type="checkbox" checked="checked" name="e5" id="e5" style="float: left; margin-top: 5px;>">
+<div id="textDiv5" style="margin-left: 25px;"></div>          
+</div>
+
+
+<div class="listContainer5">
+<input type="checkbox" checked="checked" name="e6" id="e6" style="float: left; margin-top: 5px;>">
+<div id="textDiv6" style="margin-left: 25px;"></div>          
+</div>
+
+<div class="listContainer6">
+<input type="checkbox" checked="checked" name="e7" id="e7" style="float: left; margin-top: 5px;>">
+<div id="textDiv7" style="margin-left: 25px;"></div>          
+</div>
+
+
+<!-- <input type="text" id="textDiv" name="textBox" style="background:#FA5882; color:white;">
+<input type="text" id="textDiv2" name="textBox" style="background:#A9F5F2; color:black;">
+<input type="text" id="textDiv3" name="textBox" style="background:#A9F5D0; color:black;">    
+<input type="text" id="textDiv4" name="textBox" style="background:#F4FA58; color:black;">
+<input type="text" id="textDiv5" name="textBox" style="background:#FAAC58; color:black;">
+<input type="text" id="textDiv6" name="textBox" style="background:#F6CEF5; color:black;">
+<input type="text" id="textDiv7" name="textBox" style="background:cyan; color:black;"> -->
+</div>
+<div id="contenu">
+<div id="eventFilterCalendar"></div>
+<div id='calendar' style="width:100%"></div>
+</div>
+</div>
+<div id="messages>
+</div>
+
+</body>
+</html>

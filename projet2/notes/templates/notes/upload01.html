@@ -1,0 +1,67 @@
+
+{% block content %}
+<style type="text/css">
+
+form {
+ width: auto;
+ height:58px;
+padding: 20px;
+border: 1px solid #270644;
+border-color : grey;
+}
+
+div#ring tt {
+font-size:17px;
+font-weight:bold;
+font-family: Verdana;
+}
+
+tt
+{
+color:rgb(96,96,96);
+font-size:12px;
+}
+
+input[type=submit]  {
+    background-color:#81BEF7;
+     width:90px;
+     height:30px;
+    }
+.button {
+    color: white;
+    font-weight:bold;
+}
+</style>
+
+
+<body>
+<div id="ring" >
+<tt>IMPORT</tt></tr>
+</div>
+<td>This importer will import the following fields: choix , name , nature_unit , valT , val10 , val_ref</br></br></td>
+<form enctype="multipart/form-data" action="/import_xls2" method="get">{%csrf_token %}
+
+<table>
+
+<tr><td>
+<label for="Filepath"><tt>Select a file to import</tt></label>
+
+{{ form.file }}
+
+
+<br/>
+<input type="submit" value="Submit" name="action" class="button" />
+
+</td></tr>
+
+</table>
+
+</form>
+
+
+<a href="javascript:history.go(-1)">back</a>
+</br>
+
+
+</body>
+{% endblock %}

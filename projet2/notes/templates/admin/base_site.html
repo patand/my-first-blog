@@ -1,0 +1,40 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }} | {% trans 'Materials database - DMSM' %}{% endblock %}
+
+{% block branding %}
+<style type="text/css">
+
+#header{ background-color: #333940; border-bottom: solid 3px #999; }
+
+#branding h1{ color: #fff; }
+.module h2, .module caption, .inline-group h2 { background:#ccc url(/admin_media/img/admin/nav-bg.gif) bottom left repeat-x; color: #333940; }
+a.section:link, a.section:visited { color: #666666; }
+                                    
+#sitename {
+margin-left:12px;
+color: #FF0000;                                   
+}
+
+#sitename2 {
+margin-left:12px;
+color: #FFFF00;                                                
+}
+
+a:visited {color: #006600}
+a:hover {color: #ff0000; text-decoration: none; }              
+
+a.red:hover {color: #DC143C; background: none; font-style: normal;}
+             
+</style>
+
+<h1 id="sitename">{%  trans 'Materials database - DMSM' %}</h1>
+
+
+{#<a  href="" onClick="javascript:window.history.go(-1)" >Home</a>#}
+<a  href="/home/"  >Homepage</a>
+
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
